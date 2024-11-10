@@ -31,7 +31,9 @@ LOGIN_PROMPT = "Button to Log in"
 def main():
     with sync_playwright() as playwright, playwright.chromium.launch(headless=False) as browser:
         # Create a new page in the browser and wrap it get access to the AgentQL's querying API
-        page = agentql.wrap(browser.new_page())#Get page
+        context = browser.new_context(locale="en-US")#Force the chromium browser language to be english https://playwright.dev/docs/api/class-browser
+        new_page = context.new_page()
+        page = agentql.wrap(new_page)#Get page
 
         page.goto(URL)#Direct to instagram
         _input_login_data(page,user_name="71103huz@gmail.com",password="824682465Asd!")#Fill in the login info
