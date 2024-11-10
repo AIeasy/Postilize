@@ -24,6 +24,13 @@ USER_PASS_BOX_QUERY = """
     password_input
 }
 """
+POP_UP_QUERY = """
+{
+    popup_form {
+        close_btn
+    }
+}
+"""
 #NLP Prompt for login button
 LOGIN_PROMPT = "Button to Log in"
 #NLP Prompt for goto message section
@@ -93,9 +100,13 @@ def _find_message_section(page: Page):
     if Message_section_btn:
         Message_section_btn.click()
 
-    # Wait for 10 seconds to see the browser action
-    page.wait_for_timeout(10000)
-
-
+    # Wait for 3 seconds to see the browser action
+    page.wait_for_timeout(3000)
+    # Use query_elements() method to fetch the close popup button from the page
+    response = page.query_elements(POP_UP_QUERY)
+    # Click the close button to close the popup
+    response.popup_form.close_btn.click()
+    # Wait for 3 seconds to see the browser action
+    page.wait_for_timeout(3000)
 if __name__ == "__main__":
     main()
