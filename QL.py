@@ -35,7 +35,8 @@ POP_UP_QUERY = """
 LOGIN_PROMPT = "Button to Log in"
 #NLP Prompt for goto message section
 MESSAGE_SECTION_PROMPT = "Button to send message"
-
+#NLP Prompt for start new message button
+MESSAGE_BUTTON_PROMPT = "Button with aria-label 'New Message'"
 def main():
     with sync_playwright() as playwright, playwright.chromium.launch(headless=False) as browser:
         # Create a new page in the browser and wrap it get access to the AgentQL's querying API
@@ -46,7 +47,8 @@ def main():
         page.goto(URL)#Direct to instagram
         _input_login_data(page,user_name="71103huz@gmail.com",password="824682465Asd!")#Fill in the login info
         _login(page)#Click the login button
-        _find_message_section(page)
+        _find_message_section(page)#Direct to the message section
+        _find_message_button(page)#Click on the new message button to direct to reciption page
 
 def _input_login_data(page: Page, user_name: str, password: str) -> dict:
     """ Input login data
@@ -108,5 +110,17 @@ def _find_message_section(page: Page):
     response.popup_form.close_btn.click()
     # Wait for 3 seconds to see the browser action
     page.wait_for_timeout(3000)
+def _find_message_button(page: Page):
+    '''
+    Locate and Click the new message button to direct to reciptions section.
+    Note: AgentQL can only locate the svg on the new message button due to Instagram's encryption,
+      by using the bounding_box and playwright api we can bypass it.
+    # Interact with the element using Playwright API
+    # API Doc: https://playwright.dev/python/docs/input#text-input
+    response.new_message_btn.click()
+    '''
+    new_message_svg = page.get_by_prompt(MESSAGE_BUTTON_PROMPT)#
+    box = new_message_svg.bounding_box()
+    page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
 if __name__ == "__main__":
     main()
