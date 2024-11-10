@@ -223,11 +223,8 @@ class InstagramMockUI(QWidget):
     def login(self):
         username = self.username_entry.text()
         password = self.password_entry.text()
-        if username and password:
-            self.show_message_form()
-        else:
-            QMessageBox.warning(self, 'Error', 'Please enter both username and password')
-        """        
+
+ 
         if username and password:
             login_success, error_code = self.ql.login(username, password)  # Call QL.py's main function to log in
             if login_success:
@@ -242,7 +239,7 @@ class InstagramMockUI(QWidget):
         else:
             QMessageBox.warning(self, 'Error', 'Please enter both username and password')
 
-            """
+
     def load_json(self):
         json_data = json.dumps({
             "username": "example_username",
@@ -277,9 +274,13 @@ class InstagramMockUI(QWidget):
         if recipient and message:
             dialog = ConfirmDialog(self)
             if dialog.exec_():
-                QMessageBox.information(self, 'Success', f'Message sent to {recipient}')
-                self.recipient_dropdown.setCurrentIndex(0)
-                self.message_text.clear()
+                message_attempt = self.ql.send_message(recipient,message)
+                if 'sucess' in message_attempt:
+                    QMessageBox.information(self, 'Success', f'Message sent to {recipient}')
+                    self.recipient_dropdown.setCurrentIndex(0)
+                    self.message_text.clear()
+                else:
+                    QMessageBox.information(self, 'Error:',message_attempt)
         else:
             QMessageBox.warning(self, 'Error', 'Please select a recipient and enter a message')
 

@@ -103,8 +103,11 @@ class QL:
         if self.page:
             self._find_message_section()
             self._find_message_button()
-            self._send_message(recipient, message)
-            return "Message sent successfully"
+            found = self._send_message(recipient,message)
+            if found:
+                return "Message sent successfully"
+            else:
+                return "recipient does not exist"
         else:
             return "Error: Not logged in or session has expired"
     def close(self):
@@ -233,13 +236,18 @@ class QL:
         # Wait for 3 seconds to see the browser action
         self.page.wait_for_timeout(3000)
         user_but = self.page.get_by_prompt(USER_PROMPT)#Locate the user checkbox
-        user_but.click()#Click on the check box to add user to reciption
-        chat_but = self.page.get_by_prompt(CHAT_PROMPT)#Locate the start chat button
-        chat_but.click()#Click on the start chat button
-        response = self.page.query_elements(CHAT_BOX_QUERY)#Locate the message box
-        response.message_input.type(message, delay=200)#Type in the message
-        send_but = self.page.get_by_prompt(SEND_PROMPT)#Locate the send button
-        send_but.click()#Click on the send message button
-        # Wait for 3 seconds to see the browser action
-        self.page.wait_for_timeout(3000)
+        if user_but:
+            user_but.click()#Click on the check box to add user to reciption
+            chat_but = self.page.get_by_prompt(CHAT_PROMPT)#Locate the start chat button
+            chat_but.click()#Click on the start chat button
+            response = self.page.query_elements(CHAT_BOX_QUERY)#Locate the message box
+            response.message_input.type(message, delay=200)#Type in the message
+            send_but = self.page.get_by_prompt(SEND_PROMPT)#Locate the send button
+            send_but.click()#Click on the send message button
+            # Wait for 3 seconds to see the browser action
+            self.page.wait_for_timeout(3000)
+            return True
+        else:
+            return False
+
 
