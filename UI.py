@@ -2,9 +2,31 @@ import sys
 import json
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                             QLineEdit, QPushButton, QLabel, QTextEdit, QMessageBox, 
-                            QFrame, QSizePolicy, QComboBox)
+                            QFrame, QSizePolicy, QComboBox, QDialog)
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
+
+class ConfirmDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Confirm Message")
+        self.setFixedSize(300, 200)
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        self.message = QLabel("Are you sure you want to send this message?")
+        self.message.setWordWrap(True)
+        layout.addWidget(self.message)
+
+        button_layout = QHBoxLayout()
+        self.confirm_button = QPushButton("Confirm")
+        self.cancel_button = QPushButton("Cancel")
+        button_layout.addWidget(self.confirm_button)
+        button_layout.addWidget(self.cancel_button)
+        layout.addLayout(button_layout)
+
+        self.confirm_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
 
 class InstagramMockUI(QWidget):
     def __init__(self):
@@ -165,7 +187,6 @@ class InstagramMockUI(QWidget):
         layout.addWidget(recipient_label)
 
         self.recipient_dropdown = QComboBox(self)
-        self.recipient_dropdown.addItems(['user1', 'user2', 'user3'])  # Add some dummy users
         self.recipient_dropdown.setEditable(True)
         self.recipient_dropdown.setInsertPolicy(QComboBox.NoInsert)
         layout.addWidget(self.recipient_dropdown)
@@ -213,27 +234,47 @@ class InstagramMockUI(QWidget):
 
     def load_json(self):
         json_data = json.dumps({
-            "username": "demo_user",
-            "password": "demo_pass"
+            "username": "example_username",
+            "password": "example_password",
+            "recipient": "instagram_user",
+            "message": "Hello, this is a test message!"
         })
         data = json.loads(json_data)
         
         self.username_entry.setText(data["username"])
         self.password_entry.setText(data["password"])
+        
+        # Preview the loaded data
+        preview = f"Username: {data['username']}\n"
+        preview += f"Recipient: {data['recipient']}\n"
+        preview += f"Message: {data['message']}"
+        
+        reply = QMessageBox.question(self, 'Preview JSON Data', 
+                                     preview, 
+                                     QMessageBox.Yes | QMessageBox.No, 
+                                     QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            self.login()
+            self.recipient_dropdown.addItem(data["recipient"])
+            self.recipient_dropdown.setCurrentText(data["recipient"])
+            self.message_text.setText(data["message"])
 
     def send_message(self):
         recipient = self.recipient_dropdown.currentText()
         message = self.message_text.toPlainText()
         
         if recipient and message:
-            QMessageBox.information(self, 'Success', f'Message sent to {recipient}')
-            self.recipient_dropdown.setCurrentIndex(0)
-            self.message_text.clear()
+            dialog = ConfirmDialog(self)
+            if dialog.exec_():
+                QMessageBox.information(self, 'Success', f'Message sent to {recipient}')
+                self.recipient_dropdown.setCurrentIndex(0)
+                self.message_text.clear()
         else:
             QMessageBox.warning(self, 'Error', 'Please select a recipient and enter a message')
 
     def logout(self):
-        self.recipient_dropdown.setCurrentIndex(0)
+        self.recipient_dropdown.clear()
         self.message_text.clear()
         self.username_entry.clear()
         self.password_entry.clear()
