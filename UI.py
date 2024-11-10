@@ -2,7 +2,7 @@ import sys
 import json
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                             QLineEdit, QPushButton, QLabel, QTextEdit, QMessageBox, 
-                            QFrame, QSizePolicy)
+                            QFrame, QSizePolicy, QComboBox)
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
 
@@ -19,7 +19,7 @@ class InstagramMockUI(QWidget):
                 background-color: white;
                 font-family: Arial;
             }
-            QLineEdit, QTextEdit {
+            QLineEdit, QTextEdit, QComboBox {
                 padding: 12px;
                 border: 1px solid #dbdbdb;
                 border-radius: 4px;
@@ -160,11 +160,21 @@ class InstagramMockUI(QWidget):
 
         layout.addSpacing(20)
 
-        self.recipient_entry = QLineEdit(self)
-        self.recipient_entry.setPlaceholderText('Recipient username')
-        layout.addWidget(self.recipient_entry)
+        # Recipient dropdown
+        recipient_label = QLabel('Recipient', self)
+        layout.addWidget(recipient_label)
+
+        self.recipient_dropdown = QComboBox(self)
+        self.recipient_dropdown.addItems(['user1', 'user2', 'user3'])  # Add some dummy users
+        self.recipient_dropdown.setEditable(True)
+        self.recipient_dropdown.setInsertPolicy(QComboBox.NoInsert)
+        layout.addWidget(self.recipient_dropdown)
 
         layout.addSpacing(10)
+
+        # Message text area
+        message_label = QLabel('Message', self)
+        layout.addWidget(message_label)
 
         self.message_text = QTextEdit(self)
         self.message_text.setPlaceholderText('Type your message here')
@@ -212,18 +222,18 @@ class InstagramMockUI(QWidget):
         self.password_entry.setText(data["password"])
 
     def send_message(self):
-        recipient = self.recipient_entry.text()
+        recipient = self.recipient_dropdown.currentText()
         message = self.message_text.toPlainText()
         
         if recipient and message:
             QMessageBox.information(self, 'Success', f'Message sent to {recipient}')
-            self.recipient_entry.clear()
+            self.recipient_dropdown.setCurrentIndex(0)
             self.message_text.clear()
         else:
-            QMessageBox.warning(self, 'Error', 'Please enter both recipient and message')
+            QMessageBox.warning(self, 'Error', 'Please select a recipient and enter a message')
 
     def logout(self):
-        self.recipient_entry.clear()
+        self.recipient_dropdown.setCurrentIndex(0)
         self.message_text.clear()
         self.username_entry.clear()
         self.password_entry.clear()
