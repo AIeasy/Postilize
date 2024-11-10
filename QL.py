@@ -58,11 +58,11 @@ def main():
         page = agentql.wrap(new_page)#Get page
 
         page.goto(URL)#Direct to instagram
-        _input_login_data(page,user_name="71103huz@gmail.com",password="824682465Asd!")#Fill in the login info
+        _input_login_data(page,user_name="yigexiaohao49@gmail.com",password="824682465Asd!")#Fill in the login info
         _login(page)#Click the login button
         _find_message_section(page)#Direct to the message section
         _find_message_button(page)#Click on the new message button to direct to reciption page
-        _send_message(page,user_name="darwin666tho",message="Hi")#Locate the reciption and send the message to it
+        _send_message(page,user_name="jayjay199822",message="Hi")#Locate the reciption and send the message to it
 
 def _input_login_data(page: Page, user_name: str, password: str) -> dict:
     """ Input login data
@@ -134,8 +134,9 @@ def _find_message_button(page: Page):
     response.new_message_btn.click()
     '''
     new_message_svg = page.get_by_prompt(MESSAGE_BUTTON_PROMPT)#locate the svg of new message button
-    box = new_message_svg.bounding_box()#locate the cords of bounding box of that svg, which is the button itself
-    page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)#click on that cords
+    new_message_svg.click(force=True)
+    #box = new_message_svg.bounding_box()#locate the cords of bounding box of that svg, which is the button itself
+    #page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)#click on that cords
 def _send_message(page: Page, user_name: str, message: str):
     """Locate and send the message to given reciption in the new message pop-up window.
 
