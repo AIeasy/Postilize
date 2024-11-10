@@ -41,9 +41,15 @@ CHAT_BOX_QUERY = """
 #NLP Prompt for login check
 LOGIN_CHECK_PROMPT = "Message saying Sorry, your password was incorrect"
 #NLP Prompt for backend check
-BACK_END_CHECK_PROMPT = "Message saying Please wait a few minutes"
+BACK_END_CHECK_PROMPT = "Red colored Message saying Please wait a few minutes"
 #NLP Prompt for login button
 LOGIN_PROMPT = "Button to Log in"
+#NLP Prompt for two-step verify box
+TWO_STEP_PROMPT = "Textbox for two-step verify code input "
+#NLP Prompt for two-step verify button
+TWO_STEP_BUTTON_PROMPT = "Button to continue "
+#NLP Prompt for two-step reload
+TWO_STEP_RELOAD_BUTTON_PROMPT = "Button to reload "
 #NLP Prompt for goto message section
 MESSAGE_SECTION_PROMPT = "Button to send message"
 #NLP Prompt for start new message button
@@ -54,6 +60,7 @@ USER_PROMPT = "ContactSearchResultCheckbox "
 CHAT_PROMPT = "Chat Button "
 #NLP Prompt for send message button
 SEND_PROMPT = "Send Button "
+
 
 class QL:
     def __init__(self):
@@ -76,8 +83,10 @@ class QL:
         self._input_login_data(user_name, password)
         login_attempt, error_code = self._login()
         if login_attempt:
+
             return login_attempt, "Login successful"
         else:
+
             return login_attempt, error_code
 
     def send_message(self, recipient: str, message: str):
@@ -101,6 +110,26 @@ class QL:
     def close(self):
         self.browser.close()
         self.playwright.stop()
+    def _check_two_step(self,code: int):
+        """Check if there is a two-step verfication that user need to solve
+
+        Args:
+            page (Page): The Playwright page object to interact with the browser.
+        """
+        self.page.wait_for_timeout(5000)#Sleep 5 seconds
+        two_step_reload_butt = self.page.get_by_prompt(TWO_STEP_RELOAD_BUTTON_PROMPT)#Check if the page crashed
+        if two_step_reload_butt:#if crashed, reload the page
+            two_step_reload_butt.click()
+            self.page.wait_for_timeout(1500)
+        two_step_box = self.page.get_by_prompt(TWO_STEP_PROMPT)#Locate the code input box
+
+        # Interact with the element using Playwright API
+        # API Doc: https://playwright.dev/python/docs/api/class-locator#locator-click
+        if two_step_box:
+            two_step_box.type(code)#input the user given code
+        two_step_button = self.page.get_by_prompt(TWO_STEP_BUTTON_PROMPT)#Locate the next button
+        if two_step_button:#Click the next button
+            two_step_button.click()
     def _input_login_data(self, user_name: str, password: str) -> dict:
         """ Input login data
 
@@ -139,13 +168,20 @@ class QL:
             login_btn.click()
 
         # Wait for 3 seconds to see the browser action
-        self.page.wait_for_timeout(3000)        
-        wrong_password = self.page.get_by_prompt(LOGIN_CHECK_PROMPT)#Check if instagram says wrong password
-        if wrong_password:
-            return False,"Error Code 100: Please double check your password"
-        bakcend_error = self.page.get_by_prompt(BACK_END_CHECK_PROMPT)#Check if instagram says please wait few minuts
-        if bakcend_error:
-            return False,"Error Code 101: Your Instagram Account may be banned Or there was too many login attempt"
+        self.page.wait_for_timeout(5000)
+        url = self.page.url
+        print(url)
+        if "auth_platform" in url:
+            return False,"Error Code 99: Two-step Verify code needed"
+        else:
+
+            wrong_password = self.page.get_by_prompt(LOGIN_CHECK_PROMPT)#Check if instagram says wrong password
+            if wrong_password:
+                return False,"Error Code 100: Please double check your password"
+            bakcend_error = self.page.get_by_prompt(BACK_END_CHECK_PROMPT)#Check if instagram says please wait few minuts
+            if bakcend_error:
+                
+                return False,"Error Code 101: Your Instagram Account may be banned Or there was too many login attempt"
         return True,"Login Sucessfully"
         
     def _find_message_section(self):

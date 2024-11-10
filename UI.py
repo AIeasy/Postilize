@@ -3,7 +3,7 @@ import json
 import QL
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                             QLineEdit, QPushButton, QLabel, QTextEdit, QMessageBox, 
-                            QFrame, QSizePolicy, QComboBox, QDialog)
+                            QFrame, QSizePolicy, QComboBox, QDialog,QInputDialog)
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
 
@@ -233,6 +233,11 @@ class InstagramMockUI(QWidget):
             login_success, error_code = self.ql.login(username, password)  # Call QL.py's main function to log in
             if login_success:
                 self.show_message_form()
+            elif "Two-step" in error_code:
+                code, ok = QInputDialog.getText(self, "Two-step Verification needed", "Enter your code:")
+                if ok:
+                    self.ql._check_two_step(code)
+                    print("User input:", code)
             else:
                 QMessageBox.warning(self, 'Error', f'Login failed: {error_code}')
         else:
