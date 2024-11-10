@@ -4,7 +4,7 @@ import QL
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                             QLineEdit, QPushButton, QLabel, QTextEdit, QMessageBox, 
                             QFrame, QSizePolicy, QComboBox, QDialog,QInputDialog,QFileDialog)
-from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtGui import QFont, QIcon,QPixmap
 from PyQt5.QtCore import Qt, QSize
 
 class ConfirmDialog(QDialog):
@@ -38,7 +38,11 @@ class InstagramMockUI(QWidget):
         self.initUI()
         self.ql = QL.QL()
     def initUI(self):
-        self.setWindowTitle('Instagram')
+        self.setWindowTitle('Postilize Instagram Message Sender')
+        icon_path = 'assest/icon.png'
+        icon = QIcon(icon_path)
+        # Set the window icon
+        self.setWindowIcon(icon)
         self.setFixedSize(400, 600)
         self.setStyleSheet("""
             QWidget {
@@ -109,12 +113,14 @@ class InstagramMockUI(QWidget):
         self.login_widget.setLayout(layout)
 
         # Icon placeholder
-        icon_frame = QFrame()
-        icon_frame.setObjectName("icon_placeholder")
-        icon_frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        pixmap = QPixmap('assest/instagram.png')
+        icon_label = QLabel()
+        icon_label.setPixmap(pixmap)
+        icon_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        icon_label.setAlignment(Qt.AlignCenter)
         
         icon_layout = QHBoxLayout()
-        icon_layout.addWidget(icon_frame)
+        icon_layout.addWidget(icon_label)
         layout.addLayout(icon_layout)
         icon_layout.setAlignment(Qt.AlignCenter)
 
