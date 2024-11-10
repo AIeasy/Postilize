@@ -8,16 +8,19 @@ from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
 
 class ConfirmDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self,recipient,message,parent=None):
         super().__init__(parent)
         self.setWindowTitle("Confirm Message")
         self.setFixedSize(300, 200)
         layout = QVBoxLayout()
         self.setLayout(layout)
-
-        self.message = QLabel("Are you sure you want to send this message?")
-        self.message.setWordWrap(True)
-        layout.addWidget(self.message)
+        self.recipient_label = QLabel("Recipient: "+recipient)
+        self.message_label = QLabel("Message: "+message)
+        self.waring_label = QLabel("Are you sure you want to send this message?")
+        self.waring_label.setWordWrap(True)
+        layout.addWidget(self.recipient_label)
+        layout.addWidget(self.message_label)
+        layout.addWidget(self.waring_label)
 
         button_layout = QHBoxLayout()
         self.confirm_button = QPushButton("Confirm")
@@ -224,7 +227,6 @@ class InstagramMockUI(QWidget):
         username = self.username_entry.text()
         password = self.password_entry.text()
 
- 
         if username and password:
             login_success, error_code = self.ql.login(username, password)  # Call QL.py's main function to log in
             if login_success:
@@ -272,7 +274,7 @@ class InstagramMockUI(QWidget):
         recipient = self.recipient_entry.text()
         message = self.message_text.toPlainText()
         if recipient and message:
-            dialog = ConfirmDialog(self)
+            dialog = ConfirmDialog(recipient,message,self)
             if dialog.exec_():
                 message_attempt = self.ql.send_message(recipient,message)
                 if 'sucess' in message_attempt:
@@ -289,6 +291,8 @@ class InstagramMockUI(QWidget):
         self.message_text.clear()
         self.username_entry.clear()
         self.password_entry.clear()
+        self.ql.close()
+        self.ql = QL.QL()
         self.show_login_screen()
     def closeEvent(self, event):
         self.ql.close()  # Ensure the browser session is closed when UI is closed
