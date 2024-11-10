@@ -26,7 +26,8 @@ USER_PASS_BOX_QUERY = """
 """
 #NLP Prompt for login button
 LOGIN_PROMPT = "Button to Log in"
-
+#NLP Prompt for goto message section
+MESSAGE_SECTION_PROMPT = "Button to send message"
 
 def main():
     with sync_playwright() as playwright, playwright.chromium.launch(headless=False) as browser:
@@ -37,6 +38,8 @@ def main():
 
         page.goto(URL)#Direct to instagram
         _input_login_data(page,user_name="71103huz@gmail.com",password="824682465Asd!")#Fill in the login info
+        _login(page)#Click the login button
+        _find_message_section(page)
 
 def _input_login_data(page: Page, user_name: str, password: str) -> dict:
     """ Input login data
@@ -77,7 +80,21 @@ def _login(page: Page):
     # Wait for 10 seconds to see the browser action
     page.wait_for_timeout(10000)        
 
+def _find_message_section(page: Page):
+    """Locate and Click the message button to direct to message section.
 
+    Args:
+        page (Page): The Playwright page object to interact with the browser.
+    """
+    # Find Message button element using AgentQL API's get_by_prompt() method
+    Message_section_btn = page.get_by_prompt(MESSAGE_SECTION_PROMPT)
+    # Interact with the element using Playwright API
+    # API Doc: https://playwright.dev/python/docs/api/class-locator#locator-click
+    if Message_section_btn:
+        Message_section_btn.click()
+
+    # Wait for 10 seconds to see the browser action
+    page.wait_for_timeout(10000)
 
 
 if __name__ == "__main__":
