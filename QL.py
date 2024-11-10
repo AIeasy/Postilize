@@ -58,7 +58,22 @@ def _input_login_data(page: Page, user_name: str, password: str) -> dict:
 
 
     return 
-        
+def _login(page: Page):
+    """Locate and Click the login button on the login page.
+
+    Args:
+        page (Page): The Playwright page object to interact with the browser.
+    """
+    # Find login button element using AgentQL API's get_by_prompt() method
+    login_btn = page.get_by_prompt(LOGIN_PROMPT)#This is actually a Playwright Locator
+
+    # Interact with the element using Playwright API
+    # API Doc: https://playwright.dev/python/docs/api/class-locator#locator-click
+    if login_btn:
+        login_btn.click()
+
+    # Wait for 10 seconds to see the browser action
+    page.wait_for_timeout(10000)        
 
 
 
