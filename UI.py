@@ -191,7 +191,8 @@ class InstagramMockUI(QWidget):
         layout.addWidget(title)
 
         layout.addSpacing(20)
-
+        recipient_label = QLabel('Recipient', self)
+        layout.addWidget(recipient_label)
         # Recipient dropdown
         self.recipient_entry = QLineEdit(self)
         self.recipient_entry.setPlaceholderText('Recipient username')
@@ -281,8 +282,9 @@ class InstagramMockUI(QWidget):
         if recipient and message:
             dialog = ConfirmDialog(recipient,message,self)
             if dialog.exec_():
+                self.ql._close_pop_up()
                 message_attempt = self.ql.send_message(recipient,message)
-                if 'sucess' in message_attempt:
+                if 'Sucess' in message_attempt:
                     QMessageBox.information(self, 'Success', f'Message sent to {recipient}')
                     self.recipient_entry.clear()
                     self.message_text.clear()

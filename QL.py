@@ -186,7 +186,14 @@ class QL:
                 
                 return False,"Error Code 101: Your Instagram Account may be banned Or there was too many login attempt"
         return True,"Login Sucessfully"
-        
+    def _close_pop_up(self):
+        """Locate and Click the close button on the current pop-up window
+        Args:
+            page (Page): The Playwright page object to interact with the browser.
+        """
+        response = self.page.query_elements(POP_UP_QUERY)
+        # Click the close button to close the popup
+        response.popup_form.close_btn.click()
     def _find_message_section(self):
         """Locate and Click the message button to direct to message section.
 
