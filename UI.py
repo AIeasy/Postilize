@@ -277,7 +277,7 @@ class InstagramMockUI(QWidget):
                 message_attempt = self.ql.send_message(recipient,message)
                 if 'sucess' in message_attempt:
                     QMessageBox.information(self, 'Success', f'Message sent to {recipient}')
-                    self.recipient_dropdown.setCurrentIndex(0)
+                    self.recipient_entry.clear()
                     self.message_text.clear()
                 else:
                     QMessageBox.information(self, 'Error:',message_attempt)
@@ -285,7 +285,7 @@ class InstagramMockUI(QWidget):
             QMessageBox.warning(self, 'Error', 'Please select a recipient and enter a message')
 
     def logout(self):
-        self.recipient_dropdown.clear()
+        self.recipient_entry.clear()
         self.message_text.clear()
         self.username_entry.clear()
         self.password_entry.clear()
