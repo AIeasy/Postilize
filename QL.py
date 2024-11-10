@@ -11,107 +11,56 @@ from agentql.ext.playwright.sync_api import Page
 # This library is used to launch the browser and interact with the web page
 from playwright.sync_api import sync_playwright
 
-URL = "https://scrapeme.live/shop"
+URL = "https://www.instagram.com/"#Url to instagram
 
 # The AgentQL query to locate the search box element
-# More about AgentQL Query: https://docs.agentql.com/agentql-query/query-intro
-SEARCH_BOX_QUERY = """
+USER_NAME_BOX_QUERY = """
 {
-    search_product_box
+    user_name_input
 }
 """
-
-# The AgentQL query of the data to be extracted
-# More about AgentQL Query: https://docs.agentql.com/agentql-query/query-intro
-PRODUCT_DATA_QUERY = """
+USER_PASS_BOX_QUERY = """
 {
-    price_currency
-    products[] {
-        name
-        price
-    }
+    password_input
 }
 """
-
-# Other than the AgentQL query, you can also use natural language prompt to locate the element
-NATURAL_LANGUAGE_PROMPT = "Button to display Qwilfish page"
+#NLP Prompt for login button
+LOGIN_PROMPT = "Button to Log in"
 
 
 def main():
     with sync_playwright() as playwright, playwright.chromium.launch(headless=False) as browser:
         # Create a new page in the browser and wrap it get access to the AgentQL's querying API
-        page = agentql.wrap(browser.new_page())
+        page = agentql.wrap(browser.new_page())#Get page
 
-        page.goto(URL)
+        page.goto(URL)#Direct to instagram
+        _input_login_data(page,user_name="71103huz@gmail.com",password="824682465Asd!")#Fill in the login info
 
-        product_data = _extract_product_data(
-            page,
-            search_key_word="fish",
-        )
-
-        print(product_data)
-
-        _add_qwilfish_to_cart(page)
-        _add_to_cart(page)
-        
-
-
-def _extract_product_data(page: Page, search_key_word: str) -> dict:
-    """Extract product data.
+def _input_login_data(page: Page, user_name: str, password: str) -> dict:
+    """ Input login data
 
     Args:
         page (Page): The Playwright page object to interact with the browser.
-        search_key_word (str): The product to search for.
+        user_name (str): The username of user
+        password (str): The password of user
 
     Returns:
-        dict: The product data extracted from the page.
+        None
     """
     # Find DOM element using AgentQL API's query_elements() method
-    response = page.query_elements(SEARCH_BOX_QUERY)
+    response = page.query_elements(USER_NAME_BOX_QUERY)#Locate the username inputbox
 
     # Interact with the element using Playwright API
     # API Doc: https://playwright.dev/python/docs/input#text-input
-    response.search_product_box.type(search_key_word, delay=200)
-    page.keyboard.press("Enter")
-
-    # Extract data using AgentQL API's query_data() method
-    data = page.query_data(PRODUCT_DATA_QUERY)
-
-    return data
+    response.user_name_input.type(user_name, delay=200)#Type in the username
+    response = page.query_elements(USER_PASS_BOX_QUERY)#Locate the password inputbox
+    response.password_input.type(password, delay=200)#Type in the password
 
 
-def _add_qwilfish_to_cart(page: Page):
-    """Add Qwilfish to cart with AgentQL Smart Locator API.
+    return 
+        
 
-    Args:
-        page (Page): The Playwright page object to interact with the browser.
-    """
-    # Find DOM element using AgentQL API's get_by_prompt() method
-    qwilfish_page_btn = page.get_by_prompt(NATURAL_LANGUAGE_PROMPT)
 
-    # Interact with the element using Playwright API
-    # API Doc: https://playwright.dev/python/docs/api/class-locator#locator-click
-    if qwilfish_page_btn:
-        qwilfish_page_btn.click()
-
-    # Wait for 10 seconds to see the browser action
-    page.wait_for_timeout(10000)
-def _add_to_cart(page: Page):
-    """Add Qwilfish to cart with AgentQL Smart Locator API.
-
-    Args:
-        page (Page): The Playwright page object to interact with the browser.
-    """
-    # Find DOM element using AgentQL API's get_by_prompt() method
-    qwilfish_page_btn = page.get_by_prompt("Button to add Qwilfish to cart")
-
-    # Interact with the element using Playwright API
-    # API Doc: https://playwright.dev/python/docs/api/class-locator#locator-click
-    if qwilfish_page_btn:
-        qwilfish_page_btn.click()
-
-    # Wait for 10 seconds to see the browser action
-    page.wait_for_timeout(10000)
 
 
 if __name__ == "__main__":
