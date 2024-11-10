@@ -3,7 +3,7 @@ import json
 import QL
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                             QLineEdit, QPushButton, QLabel, QTextEdit, QMessageBox, 
-                            QFrame, QSizePolicy, QComboBox, QDialog,QInputDialog)
+                            QFrame, QSizePolicy, QComboBox, QDialog,QInputDialog,QFileDialog)
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
 
@@ -243,32 +243,31 @@ class InstagramMockUI(QWidget):
 
 
     def load_json(self):
-        json_data = json.dumps({
-            "username": "example_username",
-            "password": "example_password",
-            "recipient": "instagram_user",
-            "message": "Hello, this is a test message!"
-        })
-        data = json.loads(json_data)
+        json_folder = "./json"
+        file_dialog = QFileDialog()
+        file_path, _ = file_dialog.getOpenFileName(self, 'Open JSON File', json_folder, 'JSON Files (*.json)')
+
+        if file_path:  # Check if the user selected a file
+            with open(file_path, 'r') as file:
+                data = json.load(file)
         
-        self.username_entry.setText(data["username"])
-        self.password_entry.setText(data["password"])
-        
-        # Preview the loaded data
-        preview = f"Username: {data['username']}\n"
-        preview += f"Recipient: {data['recipient']}\n"
-        preview += f"Message: {data['message']}"
-        
-        reply = QMessageBox.question(self, 'Preview JSON Data', 
-                                     preview, 
-                                     QMessageBox.Yes | QMessageBox.No, 
-                                     QMessageBox.No)
-        
-        if reply == QMessageBox.Yes:
-            self.login()
-            self.recipient_dropdown.addItem(data["recipient"])
-            self.recipient_dropdown.setCurrentText(data["recipient"])
-            self.message_text.setText(data["message"])
+            self.username_entry.setText(data["username"])
+            self.password_entry.setText(data["password"])
+            
+            # Preview the loaded data
+            preview = f"Username: {data['username']}\n"
+            preview += f"Recipient: {data['recipient']}\n"
+            preview += f"Message: {data['message']}"
+            
+            reply = QMessageBox.question(self, 'Preview JSON Data', 
+                                        preview, 
+                                        QMessageBox.Yes | QMessageBox.No, 
+                                        QMessageBox.No)
+            
+            if reply == QMessageBox.Yes:
+                self.login()
+                self.recipient_entry.setText(data["recipient"])
+                self.message_text.setText(data["message"])
 
     def send_message(self):
         recipient = self.recipient_entry.text()
