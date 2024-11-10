@@ -1,5 +1,6 @@
 import sys
 import json
+import QL
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                             QLineEdit, QPushButton, QLabel, QTextEdit, QMessageBox, 
                             QFrame, QSizePolicy, QComboBox, QDialog)
@@ -32,7 +33,7 @@ class InstagramMockUI(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
-
+        self.ql = QL.QL()
     def initUI(self):
         self.setWindowTitle('Instagram')
         self.setFixedSize(400, 600)
@@ -227,8 +228,13 @@ class InstagramMockUI(QWidget):
         username = self.username_entry.text()
         password = self.password_entry.text()
         
+
         if username and password:
-            self.show_message_form()
+            login_success, error_code = self.ql.login(username, password)  # Call QL.py's main function to log in
+            if login_success:
+                self.show_message_form()
+            else:
+                QMessageBox.warning(self, 'Error', f'Login failed: {error_code}')
         else:
             QMessageBox.warning(self, 'Error', 'Please enter both username and password')
 
@@ -279,6 +285,9 @@ class InstagramMockUI(QWidget):
         self.username_entry.clear()
         self.password_entry.clear()
         self.show_login_screen()
+    def closeEvent(self, event):
+        self.ql.close()  # Ensure the browser session is closed when UI is closed
+        event.accept()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
