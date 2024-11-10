@@ -184,13 +184,9 @@ class InstagramMockUI(QWidget):
         layout.addSpacing(20)
 
         # Recipient dropdown
-        recipient_label = QLabel('Recipient', self)
-        layout.addWidget(recipient_label)
-
-        self.recipient_dropdown = QComboBox(self)
-        self.recipient_dropdown.setEditable(True)
-        self.recipient_dropdown.setInsertPolicy(QComboBox.NoInsert)
-        layout.addWidget(self.recipient_dropdown)
+        self.recipient_entry = QLineEdit(self)
+        self.recipient_entry.setPlaceholderText('Recipient username')
+        layout.addWidget(self.recipient_entry)
 
         layout.addSpacing(10)
 
@@ -227,8 +223,11 @@ class InstagramMockUI(QWidget):
     def login(self):
         username = self.username_entry.text()
         password = self.password_entry.text()
-        
-
+        if username and password:
+            self.show_message_form()
+        else:
+            QMessageBox.warning(self, 'Error', 'Please enter both username and password')
+        """        
         if username and password:
             login_success, error_code = self.ql.login(username, password)  # Call QL.py's main function to log in
             if login_success:
@@ -243,6 +242,7 @@ class InstagramMockUI(QWidget):
         else:
             QMessageBox.warning(self, 'Error', 'Please enter both username and password')
 
+            """
     def load_json(self):
         json_data = json.dumps({
             "username": "example_username",
@@ -272,9 +272,8 @@ class InstagramMockUI(QWidget):
             self.message_text.setText(data["message"])
 
     def send_message(self):
-        recipient = self.recipient_dropdown.currentText()
+        recipient = self.recipient_entry.text()
         message = self.message_text.toPlainText()
-        
         if recipient and message:
             dialog = ConfirmDialog(self)
             if dialog.exec_():
