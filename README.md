@@ -16,7 +16,8 @@
 - **Two_step handling** Program will ask you to input verification code when facing two-step checks!
 - **Error Logging** Notice user errors with error code and reason!
 - **Headless support** Program can excute all the action in silent!
-
+Here is the showcase of the program:
+https://www.youtube.com/playlist?list=PLecKYZQ22lRfVjUMtfGapZIRBLHW4xe6v
 ## Quick Start
 
 1. Install Python SDK and dependencies via your terminal:
