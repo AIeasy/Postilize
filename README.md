@@ -21,6 +21,9 @@ https://www.youtube.com/playlist?list=PLecKYZQ22lRfVjUMtfGapZIRBLHW4xe6v
 ## Quick Start
 
 1. Install Python SDK and dependencies via your terminal:
+```bash
+pip install PyQt5
+```
 
 ```bash
 pip install agentql
