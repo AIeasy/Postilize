@@ -240,7 +240,7 @@ class InstagramMockUI(QWidget):
         username = self.username_entry.text()
         password = self.password_entry.text()
 
-        if username and password:
+        if username and password and len(password)>=6:
             login_success, error_code = self.ql.login(username, password)  # Call QL.py's main function to log in
             if login_success:
                 self.show_message_form()
@@ -251,6 +251,8 @@ class InstagramMockUI(QWidget):
                     print("User input:", code)
             else:
                 QMessageBox.warning(self, 'Error', f'Login failed: {error_code}')
+        elif len(password)<6:
+             QMessageBox.warning(self, 'Error', 'Length of password is too short!')
         else:
             QMessageBox.warning(self, 'Error', 'Please enter both username and password')
 
