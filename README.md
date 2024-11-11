@@ -28,7 +28,7 @@ agentql init
 
 2. Copy and paste [your API key](https://docs.agentql.com/dev) into the terminal.
 
-3.Run the code with your choice of headless or not:
+3. Run the code with your choice of headless or not:
 
 ```bash
 python UI.py head
