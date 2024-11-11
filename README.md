@@ -47,4 +47,5 @@ There are some points I want to share:
 - **AgentQL Hallucinations** Because of how AgentQL is made, sometime it will not locate the right element, this can be fixed by more fine-tunned prompting
 - **Json encryption** To make sure there is not leaking of user's info, the Json file need to be encrypted, but I dont know what kind of encryption that Postilize is using so I leave it raw for now.
 - **AgentQL's limitaion with Playwright** During the coding, I faced a problem that AgentQL is not able to locate the actual button elements, I reported this issue to the offical team and end-up helping them to find the right solution!
+- **Optimization** There is still room for more optimizations, such as better human-like input, anti-bot bypass, and async workflow. Due to the time limitation, I can not make them happen at the moment, but they are worth working on.
 
