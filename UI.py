@@ -33,10 +33,14 @@ class ConfirmDialog(QDialog):
         self.cancel_button.clicked.connect(self.reject)
 
 class InstagramMockUI(QWidget):
-    def __init__(self):
+    def __init__(self,headless):
         super().__init__()
         self.initUI()
-        self.ql = QL.QL()
+        if headless == 'headless':
+            self.ql = QL.QL(is_headless=True)
+        else:
+            self.ql = QL.QL(is_headless=False)
+
     def initUI(self):
         self.setWindowTitle('Postilize Instagram Message Sender')
         icon_path = 'assest/icon.png'
@@ -307,6 +311,6 @@ class InstagramMockUI(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = InstagramMockUI()
+    ex = InstagramMockUI(headless=sys.argv[1])
     ex.show()
     sys.exit(app.exec_())

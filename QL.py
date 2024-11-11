@@ -63,9 +63,9 @@ SEND_PROMPT = "Send Button "
 
 
 class QL:
-    def __init__(self):
+    def __init__(self,is_headless):
         self.playwright = sync_playwright().start()#Start the playwirght api
-        self.browser = self.playwright.chromium.launch(headless=False)#Launch the chromium browser
+        self.browser = self.playwright.chromium.launch(headless=is_headless)#Launch the chromium browser
         self.context = self.browser.new_context(locale="en-US")#Set the default language
         self.page = agentql.wrap(self.context.new_page())#Get the page for agentQL
     def login(self, user_name: str, password: str):
@@ -149,9 +149,9 @@ class QL:
 
         # Interact with the element using Playwright API
         # API Doc: https://playwright.dev/python/docs/input#text-input
-        response.user_name_input.type(user_name, delay=200)#Type in the username
+        response.user_name_input.type(user_name, delay=50)#Type in the username
         response = self.page.query_elements(USER_PASS_BOX_QUERY)#Locate the password inputbox
-        response.password_input.type(password, delay=200)#Type in the password
+        response.password_input.type(password, delay=50)#Type in the password
 
 
         return 
@@ -193,7 +193,8 @@ class QL:
         """
         response = self.page.query_elements(POP_UP_QUERY)
         # Click the close button to close the popup
-        response.popup_form.close_btn.click()
+        if response != None:
+            response.popup_form.close_btn.click(force=True)
     def _find_message_section(self):
         """Locate and Click the message button to direct to message section.
 
@@ -206,13 +207,6 @@ class QL:
         # API Doc: https://playwright.dev/python/docs/api/class-locator#locator-click
         if Message_section_btn:
             Message_section_btn.click()
-
-        # Wait for 3 seconds to see the browser action
-        self.page.wait_for_timeout(3000)
-        # Use query_elements() method to fetch the close popup button from the page
-        response = self.page.query_elements(POP_UP_QUERY)
-        # Click the close button to close the popup
-        response.popup_form.close_btn.click()
         # Wait for 3 seconds to see the browser action
         self.page.wait_for_timeout(3000)
     def _find_message_button(self):
@@ -239,7 +233,7 @@ class QL:
         #locate the search box
         response = self.page.query_elements(USER_NAME_BOX_QUERY)
         #type in the username
-        response.user_name_input.type(user_name, delay=200)
+        response.user_name_input.type(user_name, delay=50)
         # Wait for 3 seconds to see the browser action
         self.page.wait_for_timeout(3000)
         user_but = self.page.get_by_prompt(USER_PROMPT)#Locate the user checkbox
@@ -248,7 +242,7 @@ class QL:
             chat_but = self.page.get_by_prompt(CHAT_PROMPT)#Locate the start chat button
             chat_but.click()#Click on the start chat button
             response = self.page.query_elements(CHAT_BOX_QUERY)#Locate the message box
-            response.message_input.type(message, delay=200)#Type in the message
+            response.message_input.type(message, delay=50)#Type in the message
             send_but = self.page.get_by_prompt(SEND_PROMPT)#Locate the send button
             send_but.click()#Click on the send message button
             # Wait for 3 seconds to see the browser action
