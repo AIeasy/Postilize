@@ -37,8 +37,10 @@ class InstagramMockUI(QWidget):
         super().__init__()
         self.initUI()
         if headless == 'headless':
+            self.head = True
             self.ql = QL.QL(is_headless=True)
         else:
+            self.head = False
             self.ql = QL.QL(is_headless=False)
 
     def initUI(self):
@@ -303,7 +305,7 @@ class InstagramMockUI(QWidget):
         self.username_entry.clear()
         self.password_entry.clear()
         self.ql.close()
-        self.ql = QL.QL()
+        self.ql = QL.QL(is_headless = self.head)
         self.show_login_screen()
     def closeEvent(self, event):
         self.ql.close()  # Ensure the browser session is closed when UI is closed

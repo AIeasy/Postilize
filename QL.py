@@ -60,7 +60,8 @@ USER_PROMPT = "ContactSearchResultCheckbox "
 CHAT_PROMPT = "Chat Button "
 #NLP Prompt for send message button
 SEND_PROMPT = "Send Button "
-
+#NLP Promopt for checking you can send message
+NO_MSG_PROMPT = "Message saying You can send more messages after your invite is accepted."
 
 class QL:
     def __init__(self,is_headless):
@@ -101,11 +102,15 @@ class QL:
             error_code (str): code showing why the login was not sucessful 
         """
         if self.page:
+
             self._find_message_section()
+            self._close_pop_up()
             self._find_message_button()
-            found = self._send_message(recipient,message)
+            found,error = self._send_message(recipient,message)
             if found:
                 return "Message sent successfully"
+            elif error == "Error: User havent accept your invite":
+                return "User havent accept your invite"
             else:
                 return "recipient does not exist"
         else:
@@ -193,8 +198,11 @@ class QL:
         """
         response = self.page.query_elements(POP_UP_QUERY)
         # Click the close button to close the popup
-        if response != None:
+        if response.popup_form.close_btn != None:
             response.popup_form.close_btn.click(force=True)
+            self.page.wait_for_timeout(5000)
+        else:
+            self.page.wait_for_timeout(1000)
     def _find_message_section(self):
         """Locate and Click the message button to direct to message section.
 
@@ -241,14 +249,17 @@ class QL:
             user_but.click()#Click on the check box to add user to reciption
             chat_but = self.page.get_by_prompt(CHAT_PROMPT)#Locate the start chat button
             chat_but.click()#Click on the start chat button
+            no_msg = self.page.get_by_prompt(NO_MSG_PROMPT)#Locate the message box
+            if no_msg:
+                return False,"Error: User havent accept your invite"
             response = self.page.query_elements(CHAT_BOX_QUERY)#Locate the message box
             response.message_input.type(message, delay=50)#Type in the message
             send_but = self.page.get_by_prompt(SEND_PROMPT)#Locate the send button
             send_but.click()#Click on the send message button
             # Wait for 3 seconds to see the browser action
             self.page.wait_for_timeout(3000)
-            return True
+            return True,"Message sent"
         else:
-            return False
+            return False,"Error: User does not exist"
 
 
